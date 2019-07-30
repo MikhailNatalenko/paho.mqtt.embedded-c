@@ -338,6 +338,25 @@ exit:
 }
 
 
+int MQTTDoALoop(MQTTClient* c, int timeout_ms)
+{
+    int rc = SUCCESS;
+    Timer timer;
+
+    TimerInit(&timer);
+    TimerCountdownMS(&timer, timeout_ms);
+
+	//  do
+  //  {
+        if (cycle(c, &timer) < 0)
+        {
+            rc = FAILURE;
+        }
+  //	} while (!TimerIsExpired(&timer));
+
+    return rc;
+}
+
 int MQTTYield(MQTTClient* c, int timeout_ms)
 {
     int rc = SUCCESS;
