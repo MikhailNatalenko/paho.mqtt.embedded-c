@@ -73,6 +73,7 @@ void MQTTClientInit(MQTTClient* c, Network* network, unsigned int command_timeou
 	  c->next_packetid = 1;
     TimerInit(&c->last_sent);
     TimerInit(&c->last_received);
+    TimerInit(&c->pingrel);
 #if defined(MQTT_TASK)
 	  MutexInit(&c->mutex);
 #endif
@@ -217,16 +218,21 @@ int keepalive(MQTTClient* c)
 
     if (TimerIsExpired(&c->last_sent) || TimerIsExpired(&c->last_received))
     {
-        if (c->ping_outstanding)
-            rc = FAILURE; /* PINGRESP not received in keepalive interval */
+        if (c->ping_outstanding ){
+            if (TimerIsExpired(&c->pingrel)){
+                rc = FAILURE; /* PINGRESP not received in keepalive interval */
+            }
+        }
         else
         {
             Timer timer;
             TimerInit(&timer);
             TimerCountdownMS(&timer, 1000);
             int len = MQTTSerialize_pingreq(c->buf, c->buf_size);
-            if (len > 0 && (rc = sendPacket(c, len, &timer)) == SUCCESS) // send the ping packet
+            if (len > 0 && (rc = sendPacket(c, len, &timer)) == SUCCESS){ // send the ping packet
+                TimerCountdownMS(&c->pingrel, 1000);
                 c->ping_outstanding = 1;
+            }
         }
     }
 
