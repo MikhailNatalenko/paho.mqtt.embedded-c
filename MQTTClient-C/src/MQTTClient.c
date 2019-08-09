@@ -115,7 +115,7 @@ static int readPacket(MQTTClient* c, Timer* timer)
     int rem_len = 0;
 
     /* 1. read the header byte.  This has the packet type in it */
-    int rc = c->ipstack->mqttread(c->ipstack, c->readbuf, 1, TimerLeftMS(timer));
+    int rc = c->ipstack->mqttread(c->ipstack, c->readbuf, 1, TimerLeftMS(timer)/3);
     if (rc != 1)
         goto exit;
 
