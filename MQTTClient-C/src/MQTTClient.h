@@ -221,8 +221,19 @@ DLLExport int MQTTYield(MQTTClient* client, int time);
  */
 DLLExport int MQTTIsConnected(MQTTClient* client);
 
+/**
+ * Make one MQTT loop
+ * @param c - the client object to use
+ * @param timeout_ms - timeout for a loop
+ * @return result of cycle
+ */
+DLLExport int MQTTDoALoop(MQTTClient* c, int timeout_ms);
 
-int MQTTDoALoop(MQTTClient* c, int timeout_ms);
+/**
+ * Emergency close session (it does not send Disconnect to broker!, just closes conenction on our side)
+ * @param c - the client object to use
+ */
+DLLExport void MQTTCloseSession(MQTTClient* c);
 #if defined(MQTT_TASK)
 /** MQTT start background thread for a client.  After this, MQTTYield should not be called.
 *  @param client - the client object to use
